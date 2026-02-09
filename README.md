@@ -2,6 +2,8 @@
 
 Automatically trades Bitcoin via the Coinbase Advanced API.
 
+<img width="1907" height="949" alt="image" src="https://github.com/user-attachments/assets/45c3e529-a2d4-456e-a8ac-f302997e4ff4" />
+
 ## What it does
 
 - Uses Coinbase Advanced API market data + account data.
