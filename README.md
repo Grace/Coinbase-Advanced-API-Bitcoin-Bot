@@ -279,3 +279,7 @@ $env:TRADEBOT_ENABLE_LIVE="true"
 ```
 
 and use `run --execute-live`.
+
+## Disclaimer
+
+This software is intended for educational use only and does not constitute financial advice. The author assumes no responsibility for any financial gains or losses resulting from its use.
