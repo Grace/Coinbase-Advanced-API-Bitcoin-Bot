@@ -1,6 +1,6 @@
-# Coinbase Advanced Bitcoin Trade Bot - Automatically trades Bitcoin via the Coinbase Advanced API
+# Coinbase Advanced Bitcoin Trade Bot
 
-Save your Coinbase API key JSON in a file named `cdp_api_key.json` in the project root folder.
+Automatically trades Bitcoin via the Coinbase Advanced API.
 
 ## What it does
 
@@ -65,7 +65,7 @@ pip install -r requirements.txt
 Copy-Item config.example.json config.json
 ```
 
-`cdp_api_key.json` should already exist at project root.
+Save your Coinbase API key JSON in a file named `cdp_api_key.json` in the project root folder.
 
 Optional GUI dependencies:
 
