@@ -1,4 +1,4 @@
-# Coinbase Advanced Bitcoin Trade Bot
+# Bitcoin Trade Bot
 
 Automatically trades Bitcoin via the Coinbase Advanced API.
 
