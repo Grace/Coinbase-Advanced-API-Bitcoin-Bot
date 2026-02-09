@@ -1,7 +1,12 @@
+import os
 import unittest
 from typing import Any
 
-from tradebot.coinbase_client import CoinbaseAdvancedClient
+from tradebot.coinbase_client import (
+    CoinbaseAdvancedClient,
+    _is_loopback_discard_proxy,
+    _sanitize_broken_proxy_env,
+)
 
 
 class _FakeCoinbaseClient(CoinbaseAdvancedClient):
@@ -66,6 +71,34 @@ class CoinbaseClientCandleTests(unittest.TestCase):
             query = call["query"]
             span = int(query["end"]) - int(query["start"])
             self.assertLessEqual(span, max_window_seconds)
+
+
+class CoinbaseClientProxyEnvTests(unittest.TestCase):
+    def test_is_loopback_discard_proxy_detects_expected_patterns(self) -> None:
+        self.assertTrue(_is_loopback_discard_proxy("http://127.0.0.1:9"))
+        self.assertTrue(_is_loopback_discard_proxy("localhost:9"))
+        self.assertFalse(_is_loopback_discard_proxy("http://127.0.0.1:8080"))
+        self.assertFalse(_is_loopback_discard_proxy("http://proxy.example:9"))
+
+    def test_sanitize_broken_proxy_env_removes_only_broken_loopback(self) -> None:
+        keys = ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY")
+        original = {key: os.environ.get(key) for key in keys}
+        try:
+            os.environ["HTTP_PROXY"] = "http://127.0.0.1:9"
+            os.environ["HTTPS_PROXY"] = "http://proxy.example:8080"
+            os.environ["ALL_PROXY"] = "localhost:9"
+            cleared = _sanitize_broken_proxy_env()
+            self.assertIn("HTTP_PROXY", cleared)
+            self.assertIn("ALL_PROXY", cleared)
+            self.assertIsNone(os.environ.get("HTTP_PROXY"))
+            self.assertIsNone(os.environ.get("ALL_PROXY"))
+            self.assertEqual(os.environ.get("HTTPS_PROXY"), "http://proxy.example:8080")
+        finally:
+            for key, value in original.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
 
 
 if __name__ == "__main__":

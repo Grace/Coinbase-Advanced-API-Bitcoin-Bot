@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import threading
 import time
@@ -117,6 +118,41 @@ def _parse_message_timestamp(value: Any) -> datetime:
             except Exception:
                 pass
     return datetime.now(timezone.utc)
+
+
+def _is_loopback_discard_proxy(value: str) -> bool:
+    text = str(value).strip()
+    if not text:
+        return False
+    parsed = urllib.parse.urlparse(text if "://" in text else f"http://{text}")
+    host = str(parsed.hostname or "").strip().lower()
+    if host not in {"127.0.0.1", "localhost", "::1"}:
+        return False
+    try:
+        return int(parsed.port or 0) == 9
+    except Exception:
+        return False
+
+
+def _sanitize_broken_proxy_env() -> list[str]:
+    cleared: list[str] = []
+    # Some launcher environments force loopback discard proxies like 127.0.0.1:9,
+    # which makes Coinbase REST and websocket calls fail immediately.
+    for key in (
+        "ALL_PROXY",
+        "all_proxy",
+        "HTTP_PROXY",
+        "http_proxy",
+        "HTTPS_PROXY",
+        "https_proxy",
+        "GIT_HTTP_PROXY",
+        "GIT_HTTPS_PROXY",
+    ):
+        value = os.environ.get(key)
+        if value and _is_loopback_discard_proxy(value):
+            os.environ.pop(key, None)
+            cleared.append(key)
+    return cleared
 
 
 @dataclass(slots=True)
@@ -387,6 +423,7 @@ class CoinbaseAdvancedClient:
     _MAX_REQUEST_ATTEMPTS = 4
 
     def __init__(self, key_file: str, timeout_seconds: int = 30):
+        self._cleared_proxy_env = _sanitize_broken_proxy_env()
         self.key_file = str(Path(key_file))
         self.timeout_seconds = timeout_seconds
         self.jwt_helper = str(Path(__file__).with_name("jwt_helper.mjs"))

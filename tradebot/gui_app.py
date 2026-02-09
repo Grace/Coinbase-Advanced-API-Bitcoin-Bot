@@ -823,7 +823,7 @@ def _render_runtime_panel(
 
 def main() -> None:
     args = _parse_args()
-    st.set_page_config(page_title="TradeBot Dashboard", layout="wide")
+    st.set_page_config(page_title="Bitcoin Trade Bot Dashboard", layout="wide")
     _hide_streamlit_status_widget()
     _inject_dashboard_theme()
     _load_dotenv_if_present()
@@ -835,7 +835,7 @@ def main() -> None:
     if "gui_loop_mode" not in st.session_state:
         st.session_state["gui_loop_mode"] = "websocket"
 
-    st.title("TradeBot Dashboard")
+    st.title("Bitcoin Trade Bot Dashboard")
     st.caption("Optional GUI for non-technical operation and visualization.")
 
     with st.sidebar:
