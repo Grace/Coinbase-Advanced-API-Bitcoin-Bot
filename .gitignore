@@ -1,0 +1,8 @@
+cdp_api_key.json
+config.json
+.env
+.venv/
+__pycache__/
+*.pyc
+tradebot_state.json
+tradebot_metrics.json

@@ -1,0 +1,2 @@
+# Core dependency for realtime Coinbase market-data websocket feed.
+websocket-client>=1.8,<2

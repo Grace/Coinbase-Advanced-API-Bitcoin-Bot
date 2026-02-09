@@ -1,0 +1,4 @@
+# Optional GUI dependencies.
+-r requirements.txt
+streamlit>=1.40,<2
+pandas>=2.2,<3
